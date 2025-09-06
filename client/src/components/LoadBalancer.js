@@ -1,36 +1,6 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/LoadBalancer.css';
-
-// Error Boundary Component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-  
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-  
-  componentDidCatch(error, errorInfo) {
-    console.error("Error caught by boundary:", error, errorInfo);
-  }
-  
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="error-boundary">
-          <h2>Something went wrong.</h2>
-          <p>{this.state.error?.toString()}</p>
-          <button onClick={() => this.setState({ hasError: false, error: null })}>
-            Try Again
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
 
 const INITIAL_SERVERS = [
   { id: 'server-1', queue: [] },
@@ -39,7 +9,9 @@ const INITIAL_SERVERS = [
   { id: 'server-4', queue: [] }
 ];
 
-const LoadBalancerVisualization = () => {
+const LoadBalancer = () => {
+  const navigate = useNavigate();
+  
   // states & refs
   const [servers, setServers] = useState(INITIAL_SERVERS);
   const [algorithm, setAlgorithm] = useState('roundRobin');
@@ -50,6 +22,7 @@ const LoadBalancerVisualization = () => {
   const [paths, setPaths] = useState([]);
   const [svgSize, setSvgSize] = useState({w:0,h:0});
   const [tooltip, setTooltip] = useState(null);
+  const [autoRequestCount, setAutoRequestCount] = useState(0);
 
   const containerRef = useRef(null);
   const clientRef = useRef(null);
@@ -91,7 +64,7 @@ const LoadBalancerVisualization = () => {
       const newPaths = servers.map((s, idx) => {
         const rowEl = serverRowRefs.current[idx];
         if(!rowEl) return null;
-        const serverBox = rowEl.querySelector('.server');
+        const serverBox = rowEl.querySelector('.load-balancer-server');
         const srect = serverBox.getBoundingClientRect();
         const p2 = { x: srect.left + srect.width/2 - crect.left, y: srect.top + srect.height/2 - crect.top };
         const d = buildCurvePath(p1, p2);
@@ -105,7 +78,7 @@ const LoadBalancerVisualization = () => {
   }, [servers.length, buildCurvePath]);
 
   // initial compute + observe resize changes
-  useLayoutEffect(() => {
+  useEffect(() => {
     computePaths();
     
     const resizeHandler = () => computePaths();
@@ -127,7 +100,14 @@ const LoadBalancerVisualization = () => {
     }
     
     const interval = Math.max(250, 1100 / speed);
-    autoIntervalRef.current = setInterval(() => createRequest(), interval);
+    autoIntervalRef.current = setInterval(() => {
+      if (autoRequestCount < 20) {
+        createRequest();
+        setAutoRequestCount(prev => prev + 1);
+      } else {
+        setIsActive(false);
+      }
+    }, interval);
     
     return () => {
       if (autoIntervalRef.current) {
@@ -135,7 +115,7 @@ const LoadBalancerVisualization = () => {
         autoIntervalRef.current = null;
       }
     };
-  }, [isActive, speed]);
+  }, [isActive, speed, autoRequestCount]);
 
   // helper: center of an element relative to container
   const centerWithin = useCallback((el) => {
@@ -155,7 +135,7 @@ const LoadBalancerVisualization = () => {
   const createDotAt = useCallback((px, py) => {
     try {
       const dot = document.createElement('div');
-      dot.className = 'moving-request';
+      dot.className = 'load-balancer-moving-request';
       dot.style.left = px + 'px';
       dot.style.top  = py + 'px';
       if (containerRef.current) {
@@ -233,7 +213,7 @@ const LoadBalancerVisualization = () => {
           const serverRow = serverRowRefs.current[targetIdx];
           if (!serverRow) return;
           
-          const serverBox = serverRow.querySelector('.server');
+          const serverBox = serverRow.querySelector('.load-balancer-server');
           if (!serverBox) return;
           
           const serverCenter = centerWithin(serverBox);
@@ -271,7 +251,9 @@ const LoadBalancerVisualization = () => {
   }, [algorithm, speed, centerWithin, createDotAt, animateDotAlongPath, computePaths]);
 
   // controls
-  const handleManual = useCallback(() => { createRequest(); }, [createRequest]);
+  const handleManual = useCallback(() => { 
+    createRequest(); 
+  }, [createRequest]);
   
   const handleReset = useCallback(() => {
     try {
@@ -297,6 +279,7 @@ const LoadBalancerVisualization = () => {
       setStats({ total:0, distributed:0, completed:0 });
       setActiveLine(null);
       setTooltip(null);
+      setAutoRequestCount(0);
       computePaths();
     } catch (err) {
       console.error("Error resetting:", err);
@@ -308,7 +291,7 @@ const LoadBalancerVisualization = () => {
     try {
       const serverRow = serverRowRefs.current[idx];
       if(!serverRow || !containerRef.current) return;
-      const box = serverRow.querySelector('.server');
+      const box = serverRow.querySelector('.load-balancer-server');
       const crect = containerRef.current.getBoundingClientRect();
       const r = box.getBoundingClientRect();
       const x = r.left + r.width/2 - crect.left;
@@ -323,56 +306,94 @@ const LoadBalancerVisualization = () => {
   const hideTooltip = useCallback(() => { setTooltip(null); }, []);
 
   return (
-    <div className="lb-container">
-      <header className="lb-header">
-        <h1 className="lb-title">Fixed Load Balancer Visualization</h1>
-        <p className="lb-subtitle">
+    <div className="load-balancer-container">
+      {/* Home Button */}
+      <button className="load-balancer-home-button" onClick={() => navigate('/')}>
+        ← Back to Home
+      </button>
+
+      <header className="load-balancer-header">
+        <h1>Fixed Load Balancer Visualization</h1>
+        <p className="load-balancer-subtitle">
           Visual pipeline: <strong>Client</strong> → <strong>Internet</strong> → <strong>Load Balancer</strong> → <strong>Servers</strong>.
           Curved links with animated flow, call-stack style server queues, Round-Robin & Least-Connections.
         </p>
       </header>
 
-      <div className="lb-visualization-container">
-        <div className="lb-network-path" ref={containerRef}>
+      {/* Explanation Section */}
+      <div className="load-balancer-explanation">
+        <h2>What is a Load Balancer?</h2>
+        <p>
+          A load balancer is a device or software that distributes network traffic across multiple servers to ensure no single server becomes overwhelmed. This improves responsiveness, increases availability, and provides fault tolerance for applications.
+        </p>
+        
+        <div className="load-balancer-key-points">
+          <h3>Key Benefits:</h3>
+          <ul>
+            <li>✅ <strong>Improved Performance:</strong> Distributes requests efficiently across servers</li>
+            <li>✅ <strong>High Availability:</strong> Automatically redirects traffic if a server fails</li>
+            <li>✅ <strong>Scalability:</strong> Easily add more servers to handle increased traffic</li>
+            <li>✅ <strong>Security:</strong> Provides an additional layer of protection against DDoS attacks</li>
+          </ul>
+        </div>
+
+        <div className="load-balancer-algorithm-info">
+          <h3>Load Balancing Algorithms:</h3>
+          <div className="load-balancer-algorithm-cards">
+            <div className="load-balancer-algorithm-card">
+              <h4>Round Robin</h4>
+              <p>Distributes requests sequentially to each server in rotation. Simple and effective for servers with similar capabilities.</p>
+            </div>
+            <div className="load-balancer-algorithm-card">
+              <h4>Least Connections</h4>
+              <p>Directs traffic to the server with the fewest active connections. Ideal when servers have varying processing power.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Visualization Section */}
+      <div className="load-balancer-visualization-container">
+        <div className="load-balancer-network-path" ref={containerRef}>
 
           {/* static wires (behind curves) */}
-          <div className="lb-connection-wire" style={{ left:'15%', width:'20%', top:'50%' }} />
-          <div className="lb-connection-wire" style={{ left:'35%', width:'20%', top:'50%' }} />
+          <div className="load-balancer-connection-wire" style={{ left:'15%', width:'20%', top:'50%' }} />
+          <div className="load-balancer-connection-wire" style={{ left:'35%', width:'20%', top:'50%' }} />
 
           {/* Client */}
-          <div className="lb-component lb-client" ref={clientRef} style={{ left:'15%', top:'50%', transform:'translate(-50%,-50%)' }}>
-            <div className="lb-node">
+          <div className="load-balancer-component load-balancer-client" ref={clientRef} style={{ left:'15%', top:'50%', transform:'translate(-50%,-50%)' }}>
+            <div className="load-balancer-node">
               <div style={{fontSize:'1.9rem'}}>👤</div>
-              <div className="lb-node-label">Client</div>
+              <div className="load-balancer-node-label">Client</div>
             </div>
           </div>
 
           {/* Internet */}
-          <div className="lb-component lb-internet" ref={internetRef} style={{ left:'35%', top:'50%', transform:'translate(-50%,-50%)' }}>
-            <div className="lb-node">
+          <div className="load-balancer-component load-balancer-internet" ref={internetRef} style={{ left:'35%', top:'50%', transform:'translate(-50%,-50%)' }}>
+            <div className="load-balancer-node">
               <div style={{fontSize:'1.9rem'}}>🌐</div>
-              <div className="lb-node-label">Internet</div>
+              <div className="load-balancer-node-label">Internet</div>
             </div>
           </div>
 
           {/* Load Balancer */}
-          <div className="lb-component lb-load-balancer" ref={lbRef} style={{ left:'55%', top:'50%', transform:'translate(-50%,-50%)' }}>
-            <div className="lb-node">
+          <div className="load-balancer-component load-balancer-load-balancer" ref={lbRef} style={{ left:'55%', top:'50%', transform:'translate(-50%,-50%)' }}>
+            <div className="load-balancer-node">
               <div style={{fontSize:'2rem'}}>⚖️</div>
-              <div className="lb-node-label">Load Balancer</div>
+              <div className="load-balancer-node-label">Load Balancer</div>
               <div style={{fontSize:'.8rem', marginTop:6, color:'#d6d6ff'}}>{algorithm === 'roundRobin' ? 'Round Robin' : 'Least Connections'}</div>
             </div>
           </div>
 
           {/* SVG curves */}
-          <svg className="lb-links" width={svgSize.w} height={svgSize.h} xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <svg className="load-balancer-links" width={svgSize.w} height={svgSize.h} xmlns="http://www.w3.org/2000/svg" aria-hidden>
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#a993fe" />
                 <stop offset="100%" stopColor="#7e61e7" />
               </linearGradient>
               <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
-                <polygon points="0 0, 10 4, 0 8" className="lb-arrow-fill"/>
+                <polygon points="0 0, 10 4, 0 8" className="load-balancer-arrow-fill"/>
               </marker>
             </defs>
 
@@ -380,30 +401,30 @@ const LoadBalancerVisualization = () => {
               <path
                 key={p.idx}
                 d={p.d}
-                className={'lb-curve ' + (activeLine === p.idx ? 'lb-active' : 'lb-flowing')}
+                className={'load-balancer-curve ' + (activeLine === p.idx ? 'load-balancer-active' : 'load-balancer-flowing')}
                 markerEnd="url(#arrowHead)"
               />
             ))}
           </svg>
 
           {/* Servers on right */}
-          <div className="lb-servers-container">
+          <div className="load-balancer-servers-container">
             {servers.map((s, idx) => (
               <div
                 key={s.id}
-                className="lb-server-row"
+                className="load-balancer-server-row"
                 ref={el => serverRowRefs.current[idx] = el}
                 onMouseEnter={() => showTooltipForServer(idx)}
                 onMouseLeave={() => hideTooltip()}
               >
-                <div className="lb-server">
-                  <div className="lb-server-header">
-                    <div className="lb-server-label">{s.id.split('-')[1].toUpperCase()}</div>
+                <div className="load-balancer-server">
+                  <div className="load-balancer-server-header">
+                    <div className="load-balancer-server-label">{s.id.split('-')[1].toUpperCase()}</div>
                   </div>
-                  <div className="lb-server-queue">
+                  <div className="load-balancer-server-queue">
                     {s.queue.length === 0
-                      ? <div className="lb-idle-note">Idle</div>
-                      : s.queue.map(q => <div key={q} className="lb-request-box">Req {q}</div>)
+                      ? <div className="load-balancer-idle-note">Idle</div>
+                      : s.queue.map(q => <div key={q} className="load-balancer-request-box">Req {q}</div>)
                     }
                   </div>
                 </div>
@@ -413,7 +434,7 @@ const LoadBalancerVisualization = () => {
 
           {/* Tooltip */}
           {tooltip && (
-            <div className="lb-tooltip" style={{ left: tooltip.x + 'px', top: tooltip.y + 'px' }}>
+            <div className="load-balancer-tooltip" style={{ left: tooltip.x + 'px', top: tooltip.y + 'px' }}>
               {tooltip.text}
             </div>
           )}
@@ -422,29 +443,30 @@ const LoadBalancerVisualization = () => {
       </div>
 
       {/* Stats */}
-      <div className="lb-stats">
-        <div className="lb-stat-item"><div className="lb-stat-value">{stats.total}</div><div className="lb-stat-label">Total</div></div>
-        <div className="lb-stat-item"><div className="lb-stat-value">{stats.distributed}</div><div className="lb-stat-label">Distributed</div></div>
-        <div className="lb-stat-item"><div className="lb-stat-value">{stats.completed}</div><div className="lb-stat-label">Completed</div></div>
-        <div className="lb-stat-item"><div className="lb-stat-value">{servers.reduce((acc,s)=>acc+s.queue.length,0)}</div><div className="lb-stat-label">Active (Queued)</div></div>
+      <div className="load-balancer-stats">
+        <div className="load-balancer-stat-item"><div className="load-balancer-stat-value">{stats.total}</div><div className="load-balancer-stat-label">Total</div></div>
+        <div className="load-balancer-stat-item"><div className="load-balancer-stat-value">{stats.distributed}</div><div className="load-balancer-stat-label">Distributed</div></div>
+        <div className="load-balancer-stat-item"><div className="load-balancer-stat-value">{stats.completed}</div><div className="load-balancer-stat-label">Completed</div></div>
+        <div className="load-balancer-stat-item"><div className="load-balancer-stat-value">{servers.reduce((acc,s)=>acc+s.queue.length,0)}</div><div className="load-balancer-stat-label">Active (Queued)</div></div>
+        <div className="load-balancer-stat-item"><div className="load-balancer-stat-value">{autoRequestCount}/20</div><div className="load-balancer-stat-label">Auto Requests</div></div>
       </div>
 
       {/* Controls */}
-      <div className="lb-controls-container">
-        <div className="lb-algorithm-selector">
-          <button className={'lb-algo-button ' + (algorithm==='roundRobin'?'lb-active':'')} onClick={()=>setAlgorithm('roundRobin')}>Round Robin</button>
-          <button className={'lb-algo-button ' + (algorithm==='leastConnections'?'lb-active':'')} onClick={()=>setAlgorithm('leastConnections')}>Least Connections</button>
+      <div className="load-balancer-controls-container">
+        <div className="load-balancer-algorithm-selector">
+          <button className={'load-balancer-algo-button ' + (algorithm==='roundRobin'?'load-balancer-active':'')} onClick={()=>setAlgorithm('roundRobin')}>Round Robin</button>
+          <button className={'load-balancer-algo-button ' + (algorithm==='leastConnections'?'load-balancer-active':'')} onClick={()=>setAlgorithm('leastConnections')}>Least Connections</button>
         </div>
 
-        <div className="lb-controls">
-          <button className="lb-control-button" onClick={() => setIsActive(v => !v)}>
-            <span className={`lb-status-indicator ${isActive ? 'lb-status-active' : 'lb-status-inactive'}`}></span>
+        <div className="load-balancer-controls">
+          <button className="load-balancer-control-button" onClick={() => setIsActive(v => !v)} disabled={autoRequestCount >= 20 && !isActive}>
+            <span className={`load-balancer-status-indicator ${isActive ? 'load-balancer-status-active' : 'load-balancer-status-inactive'}`}></span>
             {isActive ? 'Pause Auto' : 'Start Auto'}
           </button>
-          <button className="lb-control-button lb-manual" onClick={handleManual}>Send Manual Request</button>
-          <button className="lb-control-button lb-reset" onClick={handleReset}>Reset</button>
+          <button className="load-balancer-control-button load-balancer-manual" onClick={handleManual}>Send Manual Request</button>
+          <button className="load-balancer-control-button load-balancer-reset" onClick={handleReset}>Reset</button>
 
-          <div className="lb-speed-wrap">
+          <div className="load-balancer-speed-wrap">
             Speed
             <input type="range" min="0.6" max="2" step="0.1" value={speed} onChange={(e)=>setSpeed(parseFloat(e.target.value))}/>
             <span style={{minWidth:36, display:'inline-block', textAlign:'center'}}>{speed.toFixed(1)}x</span>
@@ -452,15 +474,6 @@ const LoadBalancerVisualization = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-// Main LoadBalancer component with Error Boundary
-const LoadBalancer = () => {
-  return (
-    <ErrorBoundary>
-      <LoadBalancerVisualization />
-    </ErrorBoundary>
   );
 };
 

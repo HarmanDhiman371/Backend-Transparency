@@ -7,8 +7,9 @@ import AuthDemo from './components/AuthDemo';
 import MiddlewareDemo from './components/MiddlewareDemo';
 import EventLoopDemo from './components/EventLoopDemo';
 import AuthenticationDemo from './components/AuthenticationDemo'; 
-import LoadBalancer from './components/LoadBalancer';
 // Updated import
+import LoadBalancer from './components/LoadBalancer';
+import './styles/LoadBalancer.css';
 import './styles/App.css';
 
 function App() {
