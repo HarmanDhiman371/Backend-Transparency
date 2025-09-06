@@ -1,0 +1,162 @@
+/* styles/AuthForm.css */
+.auth-form-container {
+  background: rgba(26, 26, 46, 0.7);
+  border-radius: 16px;
+  padding: 25px;
+  border: 1px solid rgba(101, 119, 187, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.form-header h2 {
+  color: #a993fe;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.toggle-mode-btn {
+  background: none;
+  border: none;
+  color: #7e61e7;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.toggle-mode-btn:hover:not(:disabled) {
+  color: #a993fe;
+}
+
+.toggle-mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #c0c0e3;
+  font-weight: 500;
+}
+
+.input-group label i {
+  color: #a993fe;
+  width: 16px;
+}
+
+.input-group input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(101, 119, 187, 0.3);
+  background: rgba(26, 26, 46, 0.8);
+  color: #e6e6e6;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #a993fe;
+  box-shadow: 0 0 0 2px rgba(169, 147, 254, 0.2);
+}
+
+.input-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-btn {
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #a993fe, #7e61e7);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(126, 97, 231, 0.4);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.controls {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(101, 119, 187, 0.2);
+}
+
+.control-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.control-btn {
+  padding: 10px 16px;
+  border: 1px solid rgba(126, 97, 231, 0.3);
+  background: rgba(26, 26, 46, 0.6);
+  color: #c0c0e3;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.control-btn:hover {
+  background: rgba(126, 97, 231, 0.2);
+  color: white;
+}
+
+.reset-btn {
+  color: #ff6b6b;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #c0c0e3;
+}
+
+.speed-slider {
+  width: 100%;
+  max-width: 200px;
+}

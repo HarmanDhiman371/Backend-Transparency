@@ -39,31 +39,6 @@
   color: #c0c0e3;
 }
 
-.hero-progress {
-  margin-bottom: 30px;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #a993fe, #7e61e7);
-  border-radius: 4px;
-  transition: width 0.5s ease;
-}
-
-.hero-progress span {
-  font-size: 0.9rem;
-  color: #a993fe;
-}
-
 .cta-button {
   padding: 16px 32px;
   border: none;
@@ -92,36 +67,79 @@
   z-index: 1;
 }
 
-.floating-server, .floating-database, .floating-api {
+.server-container, .database-container, .user-container {
   position: absolute;
-  font-size: 4rem;
-  animation: float 6s ease-in-out infinite;
+  text-align: center;
 }
 
-.floating-server {
+.server-container {
   top: 50px;
   left: 100px;
-  animation-delay: 0s;
 }
 
-.floating-database {
+.database-container {
   top: 150px;
   right: 100px;
-  animation-delay: 2s;
 }
 
-.floating-api {
+.user-container {
   bottom: 100px;
   left: 200px;
-  animation-delay: 4s;
 }
 
-.connecting-line {
+.server, .database, .user {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
+  animation: float 4s ease-in-out infinite;
+}
+
+.server-label, .database-label, .user-label {
+  font-size: 0.9rem;
+  color: #a993fe;
+  font-weight: 500;
+}
+
+.data-flow {
   position: absolute;
-  width: 2px;
-  height: 200px;
-  background: linear-gradient(to bottom, transparent, #7e61e7, transparent);
-  animation: pulse 3s ease-in-out infinite;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #7e61e7, transparent);
+}
+
+.data-packet {
+  position: absolute;
+  font-size: 1.5rem;
+  top: -15px;
+  left: 0;
+  animation: moveData 4s linear infinite;
+}
+
+@keyframes moveData {
+  0% {
+    left: 20%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    transform: scale(1.2);
+  }
+  50% {
+    left: 50%;
+  }
+  55% {
+    transform: scale(1);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 80%;
+    opacity: 0;
+  }
 }
 
 /* Sections Common Styles */
@@ -148,32 +166,6 @@
 .topics-section {
   padding: 80px 5%;
   background: rgba(26, 26, 46, 0.5);
-}
-
-.category-filters {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 40px;
-  padding: 0 10px;
-}
-
-.filter-btn {
-  padding: 10px 20px;
-  border: 1px solid rgba(126, 97, 231, 0.3);
-  background: rgba(26, 26, 46, 0.6);
-  color: #c0c0e3;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.filter-btn:hover, .filter-btn.active {
-  background: linear-gradient(90deg, #a993fe, #7e61e7);
-  color: white;
-  border-color: transparent;
 }
 
 .topics-grid {
@@ -234,44 +226,6 @@
   margin-bottom: 15px;
 }
 
-.topic-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.difficulty {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.difficulty-beginner {
-  background: rgba(0, 210, 133, 0.2);
-  color: #00d285;
-}
-
-.difficulty-intermediate {
-  background: rgba(255, 165, 2, 0.2);
-  color: #ffa502;
-}
-
-.difficulty-advanced {
-  background: rgba(255, 71, 87, 0.2);
-  color: #ff4757;
-}
-
-.completed-check {
-  color: #00d285;
-  font-size: 0.8rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
 .hover-effect {
   position: absolute;
   top: 0;
@@ -284,77 +238,6 @@
 
 .topic-card:hover .hover-effect {
   left: 100%;
-}
-
-/* Learning Paths */
-.learning-paths {
-  padding: 80px 5%;
-  background: rgba(15, 52, 96, 0.3);
-}
-
-.paths-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.path-card {
-  background: rgba(26, 26, 46, 0.8);
-  border: 1px solid rgba(126, 97, 231, 0.2);
-  border-radius: 16px;
-  padding: 30px;
-  transition: all 0.3s;
-}
-
-.path-card:hover {
-  transform: translateY(-3px);
-  border-color: #7e61e7;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.path-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  color: #a993fe;
-}
-
-.path-card p {
-  color: #c0c0e3;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.path-topics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 25px;
-}
-
-.path-topic-tag {
-  padding: 6px 12px;
-  background: rgba(126, 97, 231, 0.1);
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: #c0c0e3;
-  white-space: nowrap;
-}
-
-.path-button {
-  padding: 10px 20px;
-  border: 1px solid #7e61e7;
-  background: transparent;
-  color: #7e61e7;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.path-button:hover {
-  background: #7e61e7;
-  color: white;
 }
 
 /* Features Section */
@@ -408,11 +291,11 @@
     font-size: 3rem;
   }
   
-  .floating-server {
+  .server-container {
     left: 50px;
   }
   
-  .floating-database {
+  .database-container {
     right: 50px;
   }
 }
@@ -440,31 +323,27 @@
     margin-top: 0;
   }
   
-  .floating-server, .floating-database, .floating-api {
+  .server, .database, .user {
     font-size: 3rem;
   }
   
-  .floating-server {
+  .server-container {
     top: 30px;
     left: 50px;
   }
   
-  .floating-database {
+  .database-container {
     top: 100px;
     right: 50px;
   }
   
-  .floating-api {
+  .user-container {
     bottom: 50px;
     left: 150px;
   }
   
   .topics-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-  
-  .paths-container {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }
 
@@ -490,54 +369,25 @@
     gap: 20px;
   }
   
-  .paths-container {
-    grid-template-columns: 1fr;
-  }
-  
   .features-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
   
-  .floating-server, .floating-database, .floating-api {
+  .server, .database, .user {
     font-size: 2.5rem;
   }
   
-  .floating-server {
+  .server-container {
     left: 30px;
   }
   
-  .floating-database {
+  .database-container {
     right: 30px;
   }
   
-  .floating-api {
+  .user-container {
     left: 100px;
-  }
-  
-  .connecting-line {
-    height: 150px;
-  }
-  
-  .category-filters {
-    flex-direction: row;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-bottom: 10px;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .category-filters::-webkit-scrollbar {
-    height: 4px;
-  }
-  
-  .category-filters::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  .category-filters::-webkit-scrollbar-thumb {
-    background: rgba(126, 97, 231, 0.3);
-    border-radius: 2px;
   }
 }
 
@@ -563,7 +413,7 @@
     font-size: 1.8rem;
   }
   
-  .topics-section, .learning-paths, .features-section {
+  .topics-section, .features-section {
     padding: 60px 4%;
   }
   
@@ -579,10 +429,6 @@
     font-size: 1.2rem;
   }
   
-  .path-card {
-    padding: 20px;
-  }
-  
   .feature {
     padding: 20px 15px;
   }
@@ -591,27 +437,23 @@
     font-size: 2.5rem;
   }
   
-  .floating-server, .floating-database, .floating-api {
+  .server, .database, .user {
     font-size: 2rem;
   }
   
-  .floating-server {
+  .server-container {
     top: 20px;
     left: 20px;
   }
   
-  .floating-database {
+  .database-container {
     top: 80px;
     right: 20px;
   }
   
-  .floating-api {
+  .user-container {
     bottom: 30px;
     left: 70px;
-  }
-  
-  .connecting-line {
-    height: 120px;
   }
   
   .hero-visualization {
@@ -624,21 +466,6 @@
   .hero-content h1 {
     font-size: 1.6rem;
   }
-  
-  .filter-btn {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-  }
-  
-  .topic-meta {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .path-topic-tag {
-    font-size: 0.7rem;
-    padding: 4px 8px;
-  }
 }
 
 /* Prevent horizontal scrolling */
@@ -649,11 +476,11 @@ html, body {
 
 /* Improve touch targets for mobile */
 @media (max-width: 768px) {
-  .topic-card, .path-card, .filter-btn, .cta-button, .path-button {
+  .topic-card, .cta-button {
     -webkit-tap-highlight-color: transparent;
   }
   
-  .topic-card, .path-card {
+  .topic-card {
     cursor: default;
   }
 }

@@ -1,0 +1,375 @@
+/* LoadBalancer.css - Scoped styles with lb- prefix */
+
+/* ---------- Base ---------- */
+.lb-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.lb-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.lb-title {
+  font-size: 2.3rem;
+  background: linear-gradient(90deg, #a993fe, #7e61e7, #6c42d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px rgba(126, 97, 231, 0.25);
+  margin-bottom: 6px;
+}
+
+.lb-subtitle {
+  color: #c0c0e3;
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+/* ---------- Stage ---------- */
+.lb-visualization-container {
+  position: relative;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  min-height: 700px;
+  overflow: hidden;
+}
+
+.lb-network-path {
+  position: relative;
+  height: 560px;
+  width: 100%;
+}
+
+/* Nodes */
+.lb-component {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 4;
+}
+
+.lb-node {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(169, 147, 254, 0.32);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.lb-node-label {
+  font-weight: 700;
+  color: #a993fe;
+  margin-top: 8px;
+}
+
+.lb-client .lb-node {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(30, 30, 60, 0.85));
+}
+
+.lb-internet .lb-node {
+  background: linear-gradient(135deg, rgba(22, 33, 62, 0.9), rgba(30, 45, 80, 0.85));
+}
+
+.lb-load-balancer .lb-node {
+  width: 140px;
+  height: 140px;
+  background: linear-gradient(135deg, rgba(15, 52, 96, 0.9), rgba(25, 65, 110, 0.85));
+}
+
+/* small static wires (kept behind curves) */
+.lb-connection-wire {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(169, 147, 254, 0.25), rgba(169, 147, 254, 0.05));
+  z-index: 2;
+}
+
+/* ---------- Servers (right pinned) ---------- */
+.lb-servers-container {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36%;
+  height: 86%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  z-index: 5;
+}
+
+.lb-server-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.lb-server {
+  width: 210px;
+  min-height: 120px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(169, 147, 254, 0.28);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lb-server-header {
+  width: 100%;
+  padding: 12px 10px;
+  background: rgba(0, 0, 0, 0.14);
+  text-align: center;
+}
+
+.lb-server-label {
+  font-weight: 700;
+  color: #a993fe;
+}
+
+.lb-server-queue {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  min-height: 90px;
+}
+
+.lb-request-box {
+  width: 86%;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #7e61e7, #6c42d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+}
+
+.lb-idle-note {
+  color: #7f86a8;
+  font-style: italic;
+  padding: 6px;
+}
+
+/* ---------- SVG curves & animation ---------- */
+.lb-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.lb-curve {
+  fill: none;
+  stroke: rgba(169, 147, 254, 0.46);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.lb-curve.lb-flowing {
+  stroke: url(#gradient);
+  stroke-dasharray: 10 10;
+  animation: lb-dash 1.2s linear infinite;
+}
+
+.lb-curve.lb-active {
+  stroke: #fff;
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 8px rgba(169, 147, 254, 0.9));
+}
+
+@keyframes lb-dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* arrow head style (SVG path fill) */
+.lb-arrow-fill {
+  fill: rgba(169, 147, 254, 0.9);
+}
+
+/* ---------- Moving packet dot ---------- */
+.lb-moving-request {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #a993fe;
+  z-index: 7;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 14px rgba(169, 147, 254, 0.95);
+}
+
+.lb-moving-request::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(169, 147, 254, 0.22), transparent 60%);
+  filter: blur(4px);
+}
+
+/* ---------- Stats & Controls ---------- */
+.lb-stats {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin: 18px auto 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 12px;
+  border-radius: 10px;
+  max-width: 780px;
+}
+
+.lb-stat-item {
+  text-align: center;
+}
+
+.lb-stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #a993fe;
+}
+
+.lb-stat-label {
+  color: #c0c0e3;
+}
+
+.lb-controls-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.lb-algorithm-selector {
+  display: flex;
+  gap: 12px;
+}
+
+.lb-algo-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(169, 147, 254, 0.45);
+  background: rgba(0, 0, 0, 0.18);
+  color: #dfe0ff;
+  cursor: pointer;
+}
+
+.lb-algo-button.lb-active {
+  background: linear-gradient(90deg, #a993fe, #7e61e7);
+  color: white;
+  box-shadow: 0 4px 10px rgba(126, 97, 231, 0.28);
+}
+
+.lb-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.lb-control-button {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(90deg, #a993fe, #7e61e7);
+  cursor: pointer;
+}
+
+.lb-control-button.lb-reset {
+  background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+}
+
+.lb-control-button.lb-manual {
+  background: linear-gradient(90deg, #4CAF50, #2E7D32);
+}
+
+.lb-speed-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cfd0ff;
+}
+
+/* ---------- Tooltip ---------- */
+.lb-tooltip {
+  position: absolute;
+  z-index: 20;
+  background: rgba(10, 10, 25, 0.95);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(169, 147, 254, 0.18);
+  color: #e6e6ff;
+  font-size: 0.9rem;
+  pointer-events: none;
+  transform: translate(-50%, -120%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+}
+
+/* ---------- Status Indicators ---------- */
+.lb-status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.lb-status-active {
+  background-color: #4CAF50;
+  box-shadow: 0 0 8px #4CAF50;
+}
+
+.lb-status-inactive {
+  background-color: #f44336;
+}
+
+/* ---------- Error Boundary ---------- */
+.lb-error-boundary {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.lb-error-boundary button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

@@ -1,0 +1,500 @@
+/* EventLoop.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #e6e6e6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    padding: 40px 0;
+}
+
+h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #a993fe, #7e61e7, #6c42d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 12px rgba(126, 97, 231, 0.3);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #c0c0e3;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.info-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #a993fe;
+}
+
+.definition {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(10, 15, 35, 0.6);
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+.key-points {
+    padding: 20px;
+    background: rgba(10, 15, 35, 0.6);
+    border-radius: 12px;
+}
+
+.key-points h3 {
+    color: #a993fe;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.key-points ul {
+    list-style-type: none;
+}
+
+.key-points li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.key-points li:before {
+    content: "•";
+    color: #7e61e7;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.highlight {
+    color: #a993fe;
+    font-weight: bold;
+}
+
+.visualization-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #a993fe, #7e61e7);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(126, 97, 231, 0.3);
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(126, 97, 231, 0.4);
+}
+
+.control-btn:disabled {
+    background: linear-gradient(90deg, #555, #777);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    color: #c0c0e3;
+}
+
+.speed-slider {
+    width: 150px;
+}
+
+.visualization-container {
+    position: relative;
+    height: 700px;
+    background: rgba(10, 15, 35, 0.8);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(126, 97, 231, 0.3);
+}
+
+/* Event Loop Components */
+.call-stack, .web-apis, .callback-queue, .event-loop, .thread-pool {
+    position: absolute;
+    background: rgba(20, 25, 45, 0.9);
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid rgba(126, 97, 231, 0.5);
+    box-shadow: 0 0 20px rgba(126, 97, 231, 0.2);
+    width: 200px;
+    z-index: 10;
+}
+
+.call-stack {
+    top: 40px;
+    left: 40px;
+}
+
+.web-apis {
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.thread-pool {
+    top: 40px;
+    right: 40px;
+}
+
+.callback-queue {
+    bottom: 180px;
+    right: 40px;
+}
+
+.event-loop {
+    bottom: 180px;
+    left: 40px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rotate 10s linear infinite;
+}
+
+.component-title {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #a993fe;
+    font-weight: bold;
+}
+
+.component-content {
+    min-height: 200px;
+    border: 1px solid rgba(126, 97, 231, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(10, 15, 35, 0.6);
+}
+
+.queue-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.task {
+    background: linear-gradient(90deg, #6c42d4, #7e61e7);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    animation: pulse 2s infinite;
+}
+
+.task-js {
+    background: linear-gradient(90deg, #42a5d4, #61a0e7);
+}
+
+.task-dom {
+    background: linear-gradient(90deg, #d44242, #e76161);
+}
+
+.task-ajax {
+    background: linear-gradient(90deg, #42d46c, #61e77e);
+}
+
+.task-timeout {
+    background: linear-gradient(90deg, #d4c242, #e7d761);
+}
+
+.task-fs {
+    background: linear-gradient(90deg, #d442b9, #e761ca);
+}
+
+/* Animation paths */
+.animation-path {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.path {
+    stroke: rgba(126, 97, 231, 0.3);
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 5;
+}
+
+.moving-task {
+    position: absolute;
+    background: linear-gradient(90deg, #a993fe, #7e61e7);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    width: 80px;
+    text-align: center;
+    z-index: 10;
+}
+
+.explanation {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    background: rgba(20, 25, 45, 0.9);
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid rgba(126, 97, 231, 0.5);
+    box-shadow: 0 0 20px rgba(126, 97, 231, 0.2);
+}
+
+.explanation-content {
+    padding: 10px;
+    color: #c0c0e3;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.highlight {
+    color: #a993fe;
+    font-weight: bold;
+}
+
+/* Animations */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+footer {
+    text-align: center;
+    padding: 30px 0;
+    color: #c0c0e3;
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+    .visualization-container {
+        height: 1000px;
+    }
+    
+    .call-stack, .web-apis, .callback-queue, .event-loop, .thread-pool {
+        position: relative;
+        margin: 20px auto;
+        top: unset;
+        left: unset;
+        right: unset;
+        bottom: unset;
+        transform: none;
+    }
+
+    .explanation {
+        position: relative;
+        margin: 20px auto;
+        transform: none;
+        bottom: unset;
+        left: unset;
+        width: 90%;
+    }
+}
+/* EventLoop.css - Compact Visualization Styles */
+.visualization-container {
+  position: relative;
+  height: 500px; /* Reduced from 700px */
+  background: rgba(10, 15, 35, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(126, 97, 231, 0.3);
+}
+
+/* Event Loop Components - Compact sizing */
+.call-stack, .web-apis, .callback-queue, .event-loop, .thread-pool {
+  position: absolute;
+  background: rgba(20, 25, 45, 0.9);
+  border-radius: 8px; /* Reduced from 10px */
+  padding: 10px; /* Reduced from 15px */
+  border: 2px solid rgba(126, 97, 231, 0.5);
+  box-shadow: 0 0 15px rgba(126, 97, 231, 0.2); /* Reduced glow */
+  width: 170px; /* Reduced from 200px */
+  z-index: 10;
+}
+
+.call-stack {
+  top: 30px; /* Reduced from 40px */
+  left: 30px; /* Reduced from 40px */
+}
+
+.web-apis {
+  top: 30px; /* Reduced from 40px */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.thread-pool {
+  top: 30px; /* Reduced from 40px */
+  right: 30px; /* Reduced from 40px */
+}
+
+.callback-queue {
+  bottom: 150px; /* Adjusted from 180px */
+  right: 30px; /* Reduced from 40px */
+}
+
+.event-loop {
+  bottom: 150px; /* Adjusted from 180px */
+  left: 30px; /* Reduced from 40px */
+  width: 120px; /* Reduced from 150px */
+  height: 120px; /* Reduced from 150px */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rotate 10s linear infinite;
+}
+
+.component-title {
+  text-align: center;
+  margin-bottom: 10px; /* Reduced from 15px */
+  color: #a993fe;
+  font-weight: bold;
+  font-size: 0.9rem; /* Added font size reduction */
+}
+
+.component-content {
+  min-height: 150px; /* Reduced from 200px */
+  border: 1px solid rgba(126, 97, 231, 0.3);
+  border-radius: 6px; /* Reduced from 8px */
+  padding: 8px; /* Reduced from 10px */
+  background: rgba(10, 15, 35, 0.6);
+  font-size: 0.8rem; /* Added font size reduction */
+}
+
+.task {
+  padding: 6px 8px; /* Reduced from 8px 12px */
+  border-radius: 4px; /* Reduced from 6px */
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+}
+
+.explanation {
+  position: absolute;
+  bottom: 30px; /* Reduced from 40px */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  background: rgba(20, 25, 45, 0.9);
+  border-radius: 8px; /* Reduced from 10px */
+  padding: 12px; /* Reduced from 15px */
+  border: 2px solid rgba(126, 97, 231, 0.5);
+  box-shadow: 0 0 15px rgba(126, 97, 231, 0.2); /* Reduced glow */
+}
+
+.explanation-content {
+  padding: 8px; /* Reduced from 10px */
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+}
+
+/* Animation path adjustments for smaller container */
+.animation-path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.path {
+  stroke: rgba(126, 97, 231, 0.3);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 5;
+}
+
+/* Responsive adjustments for compact layout */
+@media (max-width: 1000px) {
+  .visualization-container {
+    height: 800px; /* Reduced from 1000px */
+  }
+  
+  .call-stack, .web-apis, .callback-queue, .event-loop, .thread-pool {
+    position: relative;
+    margin: 15px auto; /* Reduced from 20px */
+    transform: none;
+  }
+
+  .explanation {
+    position: relative;
+    margin: 15px auto; /* Reduced from 20px */
+    transform: none;
+    width: 90%;
+  }
+}
+
+/* Progress bar adjustments */
+.component-content div[style*="width:"] {
+  height: 3px; /* Thinner progress bars */
+  margin-top: 3px; /* Reduced from 5px */
+}

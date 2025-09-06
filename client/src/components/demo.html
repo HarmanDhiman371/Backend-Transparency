@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Fixed Load Balancer Visualization</title>
+
+  <!-- React + Babel UMD -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* ---------- Base ---------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+      color:#e6e6e6; padding:20px; min-height:100vh;
+    }
+    .container{max-width:1400px;margin:0 auto}
+    header{text-align:center;margin-bottom:16px}
+    h1{
+      font-size:2.3rem;
+      background: linear-gradient(90deg,#a993fe,#7e61e7,#6c42d4);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      text-shadow:0 4px 12px rgba(126,97,231,.25); margin-bottom:6px;
+    }
+    .subtitle{color:#c0c0e3;max-width:900px;margin:0 auto;font-size:1rem}
+
+    /* ---------- Stage ---------- */
+    .visualization-container{
+      position:relative;background:rgba(0,0,0,.28);border-radius:14px;padding:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.45);min-height:700px;overflow:hidden;
+    }
+    .network-path{position:relative;height:560px;width:100%}
+
+    /* Nodes */
+    .component{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:4}
+    .node{
+      width:120px;height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;background:rgba(255,255,255,.06);border:1px solid rgba(169,147,254,.32);
+      box-shadow:0 6px 20px rgba(0,0,0,.45);backdrop-filter:blur(4px);
+    }
+    .node-label{font-weight:700;color:#a993fe;margin-top:8px}
+    .client .node{background:linear-gradient(135deg,rgba(26,26,46,.9),rgba(30,30,60,.85))}
+    .internet .node{background:linear-gradient(135deg,rgba(22,33,62,.9),rgba(30,45,80,.85))}
+    .load-balancer .node{width:140px;height:140px;background:linear-gradient(135deg,rgba(15,52,96,.9),rgba(25,65,110,.85))}
+
+    /* small static wires (kept behind curves) */
+    .connection-wire{position:absolute;height:2px;background:linear-gradient(90deg,rgba(169,147,254,.25),rgba(169,147,254,.05));z-index:2}
+
+    /* ---------- Servers (right pinned) ---------- */
+    .servers-container{
+      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      width:36%;height:86%;display:flex;flex-direction:column;justify-content:space-between;gap:14px;z-index:5;
+    }
+    .server-row{display:flex;justify-content:flex-end;align-items:center}
+    .server{
+      width:210px;min-height:120px;border-radius:12px;background:rgba(255,255,255,.06);
+      border:1px solid rgba(169,147,254,.28);box-shadow:0 4px 16px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;
+    }
+    .server-header{width:100%;padding:12px 10px;background:rgba(0,0,0,.14);text-align:center}
+    .server-label{font-weight:700;color:#a993fe}
+    .server-queue{flex-grow:1;display:flex;flex-direction:column-reverse;align-items:center;gap:8px;padding:10px;min-height:90px}
+    .request-box{width:86%;height:28px;border-radius:6px;background:linear-gradient(90deg,#7e61e7,#6c42d4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .idle-note{color:#7f86a8;font-style:italic;padding:6px}
+
+    /* ---------- SVG curves & animation ---------- */
+    svg.links{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
+    .curve{fill:none;stroke:rgba(169,147,254,.46);stroke-width:2.4;stroke-linecap:round}
+    .curve.flowing{
+      stroke: url(#gradient);
+      stroke-dasharray: 10 10;
+      animation: dash 1.2s linear infinite;
+    }
+    .curve.active{stroke:#fff;stroke-width:3.4;filter: drop-shadow(0 0 8px rgba(169,147,254,.9));}
+    @keyframes dash { to { stroke-dashoffset: -20; } }
+
+    /* arrow head style (SVG path fill) */
+    .arrow-fill{fill:rgba(169,147,254,.9)}
+
+    /* ---------- Moving packet dot ---------- */
+    .moving-request{position:absolute;width:18px;height:18px;border-radius:50%;background:#a993fe;z-index:7;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 14px rgba(169,147,254,.95)}
+    .moving-request::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:radial-gradient(rgba(169,147,254,.22),transparent 60%);filter:blur(4px)}
+
+    /* ---------- Stats & Controls ---------- */
+    .stats{display:flex;justify-content:center;gap:36px;margin:18px auto 8px;background:rgba(255,255,255,.06);padding:12px;border-radius:10px;max-width:780px}
+    .stat-item{text-align:center}.stat-value{font-size:1.6rem;font-weight:800;color:#a993fe}.stat-label{color:#c0c0e3}
+
+    .controls-container{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:12px}
+    .algorithm-selector{display:flex;gap:12px}
+    .algo-button{padding:10px 16px;border-radius:8px;border:1px solid rgba(169,147,254,.45);background:rgba(0,0,0,.18);color:#dfe0ff;cursor:pointer}
+    .algo-button.active{background:linear-gradient(90deg,#a993fe,#7e61e7);color:white;box-shadow:0 4px 10px rgba(126,97,231,.28)}
+    .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .control-button{padding:10px 18px;border-radius:10px;border:none;font-weight:700;color:white;background:linear-gradient(90deg,#a993fe,#7e61e7);cursor:pointer}
+    .control-button.reset{background:linear-gradient(90deg,#ff6b6b,#ee5a52)}
+    .control-button.manual{background:linear-gradient(90deg,#4CAF50,#2E7D32)}
+    .speed-wrap{display:flex;align-items:center;gap:8px;color:#cfd0ff}
+
+    /* ---------- Tooltip ---------- */
+    .tooltip {
+      position: absolute;
+      z-index: 20;
+      background: rgba(10,10,25,0.95);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(169,147,254,0.18);
+      color: #e6e6ff;
+      font-size: 0.9rem;
+      pointer-events: none;
+      transform: translate(-50%, -120%);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+      white-space: nowrap;
+    }
+
+    /* ---------- Status Indicators ---------- */
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .status-active {
+      background-color: #4CAF50;
+      box-shadow: 0 0 8px #4CAF50;
+    }
+    .status-inactive {
+      background-color: #f44336;
+    }
+    
+    /* ---------- Error Boundary ---------- */
+    .error-boundary {
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .error-boundary button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect, useLayoutEffect, useCallback } = React;
+
+    // Error Boundary Component
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+      
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+      
+      componentDidCatch(error, errorInfo) {
+        console.error("Error caught by boundary:", error, errorInfo);
+      }
+      
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div className="error-boundary">
+              <h2>Something went wrong.</h2>
+              <p>{this.state.error?.toString()}</p>
+              <button onClick={() => this.setState({ hasError: false, error: null })}>
+                Try Again
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    const INITIAL_SERVERS = [
+      { id: 'server-1', queue: [] },
+      { id: 'server-2', queue: [] },
+      { id: 'server-3', queue: [] },
+      { id: 'server-4', queue: [] }
+    ];
+
+    function LoadBalancerVisualization() {
+      // states & refs
+      const [servers, setServers] = useState(INITIAL_SERVERS);
+      const [algorithm, setAlgorithm] = useState('roundRobin');
+      const [isActive, setIsActive] = useState(false);
+      const [stats, setStats] = useState({ total:0, distributed:0, completed:0 });
+      const [speed, setSpeed] = useState(1);
+      const [activeLine, setActiveLine] = useState(null);
+      const [paths, setPaths] = useState([]);
+      const [svgSize, setSvgSize] = useState({w:0,h:0});
+      const [tooltip, setTooltip] = useState(null);
+
+      const containerRef = useRef(null);
+      const clientRef = useRef(null);
+      const internetRef = useRef(null);
+      const lbRef = useRef(null);
+      const serverRowRefs = useRef([]);
+      const serversRef = useRef(servers);
+      const requestIdRef = useRef(0);
+      const lastServerRef = useRef(-1);
+      const movingDotsRef = useRef([]);
+      const autoIntervalRef = useRef(null);
+      const resizeObserverRef = useRef(null);
+
+      useEffect(() => {
+        serversRef.current = servers;
+      }, [servers]);
+
+      // compute curved Bezier path between two center points
+      const buildCurvePath = useCallback((p1, p2) => {
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const mx = p1.x + dx * 0.44;
+        const my = p1.y + dy * 0.44;
+        const cx1 = mx;
+        const cy1 = p1.y;
+        const cx2 = mx;
+        const cy2 = p2.y;
+        return `M ${p1.x} ${p1.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p2.x} ${p2.y}`;
+      }, []);
+
+      // compute paths based on element centers (container relative)
+      const computePaths = useCallback(() => {
+        try {
+          const cont = containerRef.current;
+          const lb = lbRef.current;
+          if(!cont || !lb) return;
+          const crect = cont.getBoundingClientRect();
+          const lbc = lb.getBoundingClientRect();
+          const p1 = { x: lbc.left + lbc.width/2 - crect.left, y: lbc.top + lbc.height/2 - crect.top };
+          const newPaths = servers.map((s, idx) => {
+            const rowEl = serverRowRefs.current[idx];
+            if(!rowEl) return null;
+            const serverBox = rowEl.querySelector('.server');
+            const srect = serverBox.getBoundingClientRect();
+            const p2 = { x: srect.left + srect.width/2 - crect.left, y: srect.top + srect.height/2 - crect.top };
+            const d = buildCurvePath(p1, p2);
+            return { d, idx, p1, p2 };
+          }).filter(Boolean);
+          setPaths(newPaths);
+          setSvgSize({ w: crect.width, h: crect.height });
+        } catch (err) {
+          console.error("Error computing paths:", err);
+        }
+      }, [servers.length, buildCurvePath]);
+
+      // initial compute + observe resize changes
+      useLayoutEffect(() => {
+        computePaths();
+        
+        const resizeHandler = () => computePaths();
+        window.addEventListener('resize', resizeHandler);
+        
+        return () => {
+          window.removeEventListener('resize', resizeHandler);
+        };
+      }, [computePaths]);
+
+      // auto mode
+      useEffect(() => {
+        if(!isActive) {
+          if (autoIntervalRef.current) {
+            clearInterval(autoIntervalRef.current);
+            autoIntervalRef.current = null;
+          }
+          return;
+        }
+        
+        const interval = Math.max(250, 1100 / speed);
+        autoIntervalRef.current = setInterval(() => createRequest(), interval);
+        
+        return () => {
+          if (autoIntervalRef.current) {
+            clearInterval(autoIntervalRef.current);
+            autoIntervalRef.current = null;
+          }
+        };
+      }, [isActive, speed]);
+
+      // helper: center of an element relative to container
+      const centerWithin = useCallback((el) => {
+        try {
+          const cont = containerRef.current;
+          if (!cont) return { x: 0, y: 0 };
+          const cRect = cont.getBoundingClientRect();
+          const r = el.getBoundingClientRect();
+          return { x: r.left + r.width/2 - cRect.left, y: r.top + r.height/2 - cRect.top };
+        } catch (err) {
+          console.error("Error calculating center:", err);
+          return { x: 0, y: 0 };
+        }
+      }, []);
+
+      // create DOM dot
+      const createDotAt = useCallback((px, py) => {
+        try {
+          const dot = document.createElement('div');
+          dot.className = 'moving-request';
+          dot.style.left = px + 'px';
+          dot.style.top  = py + 'px';
+          if (containerRef.current) {
+            containerRef.current.appendChild(dot);
+          }
+          movingDotsRef.current.push({ id: null, element: dot });
+          return dot;
+        } catch (err) {
+          console.error("Error creating dot:", err);
+          return null;
+        }
+      }, []);
+
+      // animate using Web Animations API for straight segments
+      const animateDotAlongPath = useCallback(async (dot, points, durations) => {
+        if (!dot) return;
+        
+        for(let i=0;i<points.length-1;i++){
+          const from = points[i], to = points[i+1], dur = durations[i]||800;
+          await new Promise(resolve => {
+            const anim = dot.animate([{ left: from.x + 'px', top: from.y + 'px' }, { left: to.x + 'px', top: to.y + 'px' }], { duration: dur, easing: 'cubic-bezier(.22,.61,.36,1)', fill:'forwards' });
+            anim.onfinish = resolve;
+            anim.onerror = () => resolve();
+          });
+        }
+      }, []);
+
+      // create request pipeline
+      const createRequest = useCallback(() => {
+        try {
+          if(!containerRef.current || !clientRef.current || !internetRef.current || !lbRef.current) return;
+          const id = requestIdRef.current++;
+          setStats(s => ({ ...s, total: s.total + 1 }));
+
+          const start = centerWithin(clientRef.current);
+          const internet = centerWithin(internetRef.current);
+          const lbCenter = centerWithin(lbRef.current);
+
+          const dot = createDotAt(start.x, start.y);
+          if (!dot) return;
+          
+          movingDotsRef.current[movingDotsRef.current.length-1].id = id;
+
+          const t1 = Math.max(300, 1000 / speed);
+          const t2 = Math.max(250, 800 / speed);
+          const t3 = Math.max(400, 1000 / speed);
+
+          (async () => {
+            try {
+              await animateDotAlongPath(dot, [start, internet, lbCenter], [t1, t2]);
+
+              // choose server based on fresh serversRef
+              const prev = serversRef.current;
+              let targetIdx = 0;
+              if(algorithm === 'roundRobin') {
+                lastServerRef.current = (lastServerRef.current + 1) % prev.length;
+                targetIdx = lastServerRef.current;
+              } else {
+                let min = Infinity;
+                prev.forEach((s,i) => { if(s.queue.length < min){ min = s.queue.length; targetIdx = i; }});
+              }
+
+              // enqueue
+              setServers(sv => sv.map((s,i) => i === targetIdx ? { ...s, queue: [...s.queue, id] } : s));
+              setStats(s => ({ ...s, distributed: s.distributed + 1 }));
+
+              // highlight path
+              setActiveLine(targetIdx);
+              setTimeout(()=> setActiveLine(null), Math.max(400, 700 / speed));
+
+              // recompute paths to get latest server center
+              computePaths();
+              
+              // find server center DOM
+              const serverRow = serverRowRefs.current[targetIdx];
+              if (!serverRow) return;
+              
+              const serverBox = serverRow.querySelector('.server');
+              if (!serverBox) return;
+              
+              const serverCenter = centerWithin(serverBox);
+
+              // animate to server center
+              await animateDotAlongPath(dot, [lbCenter, serverCenter], [t3]);
+
+              // remove dot
+              try { 
+                if (dot.parentNode) {
+                  dot.parentNode.removeChild(dot); 
+                }
+              } catch(e){}
+              movingDotsRef.current = movingDotsRef.current.filter(d => d.element !== dot);
+
+              // simulate processing then dequeue
+              const processing = Math.max(700, (1700 + Math.random()*1400) / speed);
+              setTimeout(()=> {
+                setServers(prev => prev.map((s,i) => i === targetIdx ? { ...s, queue: s.queue.filter(q => q !== id) } : s));
+                setStats(s => ({ ...s, completed: s.completed + 1 }));
+              }, processing);
+            } catch(e) {
+              console.error("Error in request animation:", e);
+              try { 
+                if (dot.parentNode) {
+                  dot.parentNode.removeChild(dot); 
+                }
+              } catch(_){}
+              movingDotsRef.current = movingDotsRef.current.filter(d => d.element !== dot);
+            }
+          })();
+        } catch (err) {
+          console.error("Error creating request:", err);
+        }
+      }, [algorithm, speed, centerWithin, createDotAt, animateDotAlongPath, computePaths]);
+
+      // controls
+      const handleManual = useCallback(() => { createRequest(); }, [createRequest]);
+      
+      const handleReset = useCallback(() => {
+        try {
+          setIsActive(false);
+          if (autoIntervalRef.current) {
+            clearInterval(autoIntervalRef.current);
+            autoIntervalRef.current = null;
+          }
+          // remove moving dots
+          movingDotsRef.current.forEach(d => { 
+            try { 
+              if (d.element && d.element.parentNode) {
+                d.element.parentNode.removeChild(d.element); 
+              }
+            } catch(e){} 
+          });
+          movingDotsRef.current = [];
+          // reset servers and stats
+          setServers(INITIAL_SERVERS.map(s => ({ ...s, queue: [] })));
+          serversRef.current = INITIAL_SERVERS.map(s => ({ ...s, queue: [] }));
+          requestIdRef.current = 0;
+          lastServerRef.current = -1;
+          setStats({ total:0, distributed:0, completed:0 });
+          setActiveLine(null);
+          setTooltip(null);
+          computePaths();
+        } catch (err) {
+          console.error("Error resetting:", err);
+        }
+      }, [computePaths]);
+
+      // tooltip helpers: show tooltip near server box
+      const showTooltipForServer = useCallback((idx) => {
+        try {
+          const serverRow = serverRowRefs.current[idx];
+          if(!serverRow || !containerRef.current) return;
+          const box = serverRow.querySelector('.server');
+          const crect = containerRef.current.getBoundingClientRect();
+          const r = box.getBoundingClientRect();
+          const x = r.left + r.width/2 - crect.left;
+          const y = r.top - crect.top;
+          const s = servers[idx];
+          setTooltip({ x, y, text: `Queue: ${s.queue.length}` });
+        } catch (err) {
+          console.error("Error showing tooltip:", err);
+        }
+      }, [servers]);
+      
+      const hideTooltip = useCallback(() => { setTooltip(null); }, []);
+
+      return (
+        <div className="container">
+          <header>
+            <h1>Fixed Load Balancer Visualization</h1>
+            <p className="subtitle">
+              Visual pipeline: <strong>Client</strong> → <strong>Internet</strong> → <strong>Load Balancer</strong> → <strong>Servers</strong>.
+              Curved links with animated flow, call-stack style server queues, Round-Robin & Least-Connections.
+            </p>
+          </header>
+
+          <div className="visualization-container">
+            <div className="network-path" ref={containerRef}>
+
+              {/* static wires (behind curves) */}
+              <div className="connection-wire" style={{ left:'15%', width:'20%', top:'50%' }} />
+              <div className="connection-wire" style={{ left:'35%', width:'20%', top:'50%' }} />
+
+              {/* Client */}
+              <div className="component client" ref={clientRef} style={{ left:'15%', top:'50%', transform:'translate(-50%,-50%)' }}>
+                <div className="node">
+                  <div style={{fontSize:'1.9rem'}}>👤</div>
+                  <div className="node-label">Client</div>
+                </div>
+              </div>
+
+              {/* Internet */}
+              <div className="component internet" ref={internetRef} style={{ left:'35%', top:'50%', transform:'translate(-50%,-50%)' }}>
+                <div className="node">
+                  <div style={{fontSize:'1.9rem'}}>🌐</div>
+                  <div className="node-label">Internet</div>
+                </div>
+              </div>
+
+              {/* Load Balancer */}
+              <div className="component load-balancer" ref={lbRef} style={{ left:'55%', top:'50%', transform:'translate(-50%,-50%)' }}>
+                <div className="node">
+                  <div style={{fontSize:'2rem'}}>⚖️</div>
+                  <div className="node-label">Load Balancer</div>
+                  <div style={{fontSize:'.8rem', marginTop:6, color:'#d6d6ff'}}>{algorithm === 'roundRobin' ? 'Round Robin' : 'Least Connections'}</div>
+                </div>
+              </div>
+
+              {/* SVG curves */}
+              <svg className="links" width={svgSize.w} height={svgSize.h} xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#a993fe" />
+                    <stop offset="100%" stopColor="#7e61e7" />
+                  </linearGradient>
+                  <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+                    <polygon points="0 0, 10 4, 0 8" className="arrow-fill"/>
+                  </marker>
+                </defs>
+
+                {paths.map(p => (
+                  <path
+                    key={p.idx}
+                    d={p.d}
+                    className={'curve ' + (activeLine === p.idx ? 'active' : 'flowing')}
+                    markerEnd="url(#arrowHead)"
+                  />
+                ))}
+              </svg>
+
+              {/* Servers on right */}
+              <div className="servers-container">
+                {servers.map((s, idx) => (
+                  <div
+                    key={s.id}
+                    className="server-row"
+                    ref={el => serverRowRefs.current[idx] = el}
+                    onMouseEnter={() => showTooltipForServer(idx)}
+                    onMouseLeave={() => hideTooltip()}
+                  >
+                    <div className="server">
+                      <div className="server-header">
+                        <div className="server-label">{s.id.split('-')[1].toUpperCase()}</div>
+                      </div>
+                      <div className="server-queue">
+                        {s.queue.length === 0
+                          ? <div className="idle-note">Idle</div>
+                          : s.queue.map(q => <div key={q} className="request-box">Req {q}</div>)
+                        }
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tooltip */}
+              {tooltip && (
+                <div className="tooltip" style={{ left: tooltip.x + 'px', top: tooltip.y + 'px' }}>
+                  {tooltip.text}
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="stats">
+            <div className="stat-item"><div className="stat-value">{stats.total}</div><div className="stat-label">Total</div></div>
+            <div className="stat-item"><div className="stat-value">{stats.distributed}</div><div className="stat-label">Distributed</div></div>
+            <div className="stat-item"><div className="stat-value">{stats.completed}</div><div className="stat-label">Completed</div></div>
+            <div className="stat-item"><div className="stat-value">{servers.reduce((acc,s)=>acc+s.queue.length,0)}</div><div className="stat-label">Active (Queued)</div></div>
+          </div>
+
+          {/* Controls */}
+          <div className="controls-container">
+            <div className="algorithm-selector">
+              <button className={'algo-button ' + (algorithm==='roundRobin'?'active':'')} onClick={()=>setAlgorithm('roundRobin')}>Round Robin</button>
+              <button className={'algo-button ' + (algorithm==='leastConnections'?'active':'')} onClick={()=>setAlgorithm('leastConnections')}>Least Connections</button>
+            </div>
+
+            <div className="controls">
+              <button className="control-button" onClick={() => setIsActive(v => !v)}>
+                <span className={`status-indicator ${isActive ? 'status-active' : 'status-inactive'}`}></span>
+                {isActive ? 'Pause Auto' : 'Start Auto'}
+              </button>
+              <button className="control-button manual" onClick={handleManual}>Send Manual Request</button>
+              <button className="control-button reset" onClick={handleReset}>Reset</button>
+
+              <div className="speed-wrap">
+                Speed
+                <input type="range" min="0.6" max="2" step="0.1" value={speed} onChange={(e)=>setSpeed(parseFloat(e.target.value))}/>
+                <span style={{minWidth:36, display:'inline-block', textAlign:'center'}}>{speed.toFixed(1)}x</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Use React 18 createRoot API
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <ErrorBoundary>
+        <LoadBalancerVisualization />
+      </ErrorBoundary>
+    );
+  </script>
+</body>
+</html>

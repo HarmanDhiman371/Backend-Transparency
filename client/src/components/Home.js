@@ -5,7 +5,6 @@ import "../styles/Home.css";
 const Home = ({ onAuthDemoClick }) => {
   const navigate = useNavigate();
   const [completedTopics, setCompletedTopics] = useState({});
-  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
     // Load completed topics from localStorage
@@ -21,117 +20,58 @@ const Home = ({ onAuthDemoClick }) => {
       title: "Authentication",
       description:
         "Login & Signup processes with password hashing and session management",
-      category: "security",
       icon: "🔐",
-      difficulty: "beginner",
       completed: completedTopics["login-auth"] || false,
     },
     {
       id: "api-calls",
       title: "API Calls",
       description: "RESTful requests, endpoints, status codes and HTTP methods",
-      category: "fundamentals",
       icon: "🌐",
-      difficulty: "beginner",
       completed: false,
     },
     {
-      id: "database-ops",
-      title: "Database Operations",
-      description: "CRUD operations, relationships, queries and optimization",
-      category: "data",
-      icon: "🗄️",
-      difficulty: "intermediate",
+      id: "event-loop",
+      title: "Event Loop",
+      description: "Node.js event loop, callbacks, promises and async/await",
+      icon: "🔄",
       completed: false,
     },
     {
-      id: "payment-processing",
-      title: "Payment Processing",
-      description: "Stripe/PayPal integration flows and transaction handling",
-      category: "ecommerce",
-      icon: "💳",
-      difficulty: "advanced",
-      completed: false,
-    },
-    {
-      id: "file-uploads",
-      title: "File Uploads",
-      description: "File storage, processing, and CDN distribution",
-      category: "storage",
-      icon: "📤",
-      difficulty: "intermediate",
-      completed: false,
-    },
-    {
-      id: "caching",
-      title: "Caching Strategies",
-      description: "Redis, CDN, and browser caching mechanisms",
-      category: "performance",
-      icon: "⚡",
-      difficulty: "advanced",
+      id: "load-balancer",
+      title: "Load Balancer",
+      description: "Distributing traffic across multiple servers efficiently",
+      icon: "⚖️",
       completed: false,
     },
     {
       id: "middleware",
       title: "Middleware",
       description: "Request processing pipeline and security checks",
-      category: "fundamentals",
       icon: "🛡️",
-      difficulty: "intermediate",
       completed: false,
-    },
-  ];
-
-  const categories = [
-    { id: "all", name: "All Topics" },
-    { id: "fundamentals", name: "Fundamentals" },
-    { id: "security", name: "Security" },
-    { id: "data", name: "Data Management" },
-    { id: "ecommerce", name: "E-Commerce" },
-    { id: "performance", name: "Performance" },
-    { id: "storage", name: "Storage" },
-  ];
-
-  const learningPaths = [
-    {
-      title: "Web Development Fundamentals",
-      topics: ["api-calls", "login-auth", "database-ops"],
-      description: "Start with the core concepts of backend development",
-    },
-    {
-      title: "Full-Stack Mastery",
-      topics: ["api-calls", "database-ops", "file-uploads", "caching"],
-      description: "Deep dive into comprehensive backend systems",
-    },
-    {
-      title: "E-Commerce Specialist",
-      topics: ["payment-processing", "database-ops", "caching"],
-      description: "Learn backend systems for online stores",
-    },
+    }
   ];
 
   const handleTopicClick = (topicId) => {
     if (topicId === "login-auth") {
-      // Use the passed function for navigation
       if (onAuthDemoClick) {
         onAuthDemoClick();
       } else {
-        // Fallback if prop is not provided
         navigate("/auth-demo");
       }
-    }else if (topicId === 'middleware') {
-    navigate('/middleware-demo');
-  } 
-     else {
-      // For other topics, show a preview or coming soon
+    } else if (topicId === 'middleware') {
+      navigate('/middleware-demo');
+    } else if (topicId === 'event-loop') {
+      navigate('/eventloop');
+    } else if (topicId === 'api-calls') {
+      navigate('/api-demo');
+    } else if (topicId === 'load-balancer') {
+      navigate('/loadbalancer');
+    } else {
       alert(`The ${topicId} visualization is coming soon!`);
     }
   };
-
-  const filteredTopics =
-    activeCategory === "all"
-      ? topics
-      : topics.filter((topic) => topic.category === activeCategory);
 
   const completedCount = topics.filter((topic) => topic.completed).length;
   const totalCount = topics.length;
@@ -141,23 +81,11 @@ const Home = ({ onAuthDemoClick }) => {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>See Backend Processes in Action</h1>
+          <h1>Visualize Backend Magic</h1>
           <p>
-            Visualize what happens behind the scenes when you interact with web
-            applications. Understand backend concepts through interactive
-            animations.
+            Watch backend processes come to life through interactive animations. 
+            Understand complex systems by seeing them in action.
           </p>
-          <div className="hero-progress">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${(completedCount / totalCount) * 100}%` }}
-              ></div>
-            </div>
-            <span>
-              {completedCount} of {totalCount} topics completed
-            </span>
-          </div>
           <button
             className="cta-button"
             onClick={() =>
@@ -166,14 +94,30 @@ const Home = ({ onAuthDemoClick }) => {
                 .scrollIntoView({ behavior: "smooth" })
             }
           >
-            Explore Topics
+            Start Exploring
           </button>
         </div>
         <div className="hero-visualization">
-          <div className="floating-server">🖥️</div>
-          <div className="floating-database">🗄️</div>
-          <div className="floating-api">🌐</div>
-          <div className="connecting-line"></div>
+          <div className="server-container">
+            <div className="server">🖥️</div>
+            <div className="server-label">Web Server</div>
+          </div>
+          
+          <div className="data-flow">
+            <div className="data-packet" style={{ animationDelay: '0s' }}>📦</div>
+            <div className="data-packet" style={{ animationDelay: '1s' }}>📦</div>
+            <div className="data-packet" style={{ animationDelay: '2s' }}>📦</div>
+          </div>
+          
+          <div className="database-container">
+            <div className="database">🗄️</div>
+            <div className="database-label">Database</div>
+          </div>
+          
+          <div className="user-container">
+            <div className="user">👤</div>
+            <div className="user-label">User</div>
+          </div>
         </div>
       </section>
 
@@ -184,24 +128,9 @@ const Home = ({ onAuthDemoClick }) => {
           <p>Select a topic to visualize the backend processes</p>
         </div>
 
-        {/* Category Filters */}
-        <div className="category-filters">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              className={`filter-btn ${
-                activeCategory === category.id ? "active" : ""
-              }`}
-              onClick={() => setActiveCategory(category.id)}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
         {/* Topics Grid */}
         <div className="topics-grid">
-          {filteredTopics.map((topic) => (
+          {topics.map((topic) => (
             <div
               key={topic.id}
               className={`topic-card ${topic.completed ? "completed" : ""}`}
@@ -210,42 +139,7 @@ const Home = ({ onAuthDemoClick }) => {
               <div className="topic-icon">{topic.icon}</div>
               <h3>{topic.title}</h3>
               <p>{topic.description}</p>
-              <div className="topic-meta">
-                <span className={`difficulty difficulty-${topic.difficulty}`}>
-                  {topic.difficulty}
-                </span>
-                {topic.completed && (
-                  <span className="completed-check">✅ Completed</span>
-                )}
-              </div>
               <div className="hover-effect"></div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Learning Paths */}
-      <section id="learning-paths" className="learning-paths">
-        <div className="section-header">
-          <h2>Learning Paths</h2>
-          <p>Structured learning journeys for different goals</p>
-        </div>
-        <div className="paths-container">
-          {learningPaths.map((path, index) => (
-            <div key={index} className="path-card">
-              <h3>{path.title}</h3>
-              <p>{path.description}</p>
-              <div className="path-topics">
-                {path.topics.map((topicId) => {
-                  const topic = topics.find((t) => t.id === topicId);
-                  return topic ? (
-                    <span key={topicId} className="path-topic-tag">
-                      {topic.icon} {topic.title}
-                    </span>
-                  ) : null;
-                })}
-              </div>
-              <button className="path-button">Start Path</button>
             </div>
           ))}
         </div>

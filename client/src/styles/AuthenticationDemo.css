@@ -1,0 +1,47 @@
+/* styles/AuthenticationDemo.css */
+.authentication-demo {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.authentication-demo h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #a993fe, #7e61e7, #6c42d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.demo-description {
+  text-align: center;
+  color: #c0c0e3;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.demo-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.form-section {
+  flex: 1;
+  max-width: 400px;
+}
+
+.visualization-section {
+  flex: 2;
+}
+
+/* Responsive design */
+@media (max-width: 968px) {
+  .demo-container {
+    flex-direction: column;
+  }
+  
+  .form-section {
+    max-width: 100%;
+  }
+}
