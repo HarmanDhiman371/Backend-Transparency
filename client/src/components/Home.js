@@ -170,14 +170,7 @@ const Home = ({ onAuthDemoClick }) => {
             <h3>Interactive Controls</h3>
             <p>Pause, rewind, and adjust speed to learn at your own pace</p>
           </div>
-          <div className="feature">
-            <div className="feature-icon">🌙</div>
-            <h3>Dark Theme</h3>
-            <p>
-              Comfortable viewing experience with our developer-friendly dark
-              theme
-            </p>
-          </div>
+         
         </div>
       </section>
     </div>
