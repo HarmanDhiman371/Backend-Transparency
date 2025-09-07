@@ -97,27 +97,11 @@ const Home = ({ onAuthDemoClick }) => {
             Start Exploring
           </button>
         </div>
-        <div className="hero-visualization">
-          <div className="server-container">
-            <div className="server">🖥️</div>
-            <div className="server-label">Web Server</div>
-          </div>
-          
-          <div className="data-flow">
-            <div className="data-packet" style={{ animationDelay: '0s' }}>📦</div>
-            <div className="data-packet" style={{ animationDelay: '1s' }}>📦</div>
-            <div className="data-packet" style={{ animationDelay: '2s' }}>📦</div>
-          </div>
-          
-          <div className="database-container">
-            <div className="database">🗄️</div>
-            <div className="database-label">Database</div>
-          </div>
-          
-          <div className="user-container">
-            <div className="user">👤</div>
-            <div className="user-label">User</div>
-          </div>
+        <div className="hero-image">
+          <img 
+            src="https://cdn-icons-png.flaticon.com/512/8099/8099229.png" 
+            alt="Server infrastructure visualization" 
+          />
         </div>
       </section>
 

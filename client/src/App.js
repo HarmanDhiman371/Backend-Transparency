@@ -11,7 +11,7 @@ import AuthenticationDemo from './components/AuthenticationDemo';
 import LoadBalancer from './components/LoadBalancer';
 import './styles/LoadBalancer.css';
 import './styles/App.css';
-
+import Footer from './components/Footer';
 function App() {
   return (
     <Router>
@@ -26,6 +26,7 @@ function App() {
           <Route path="/auth-demo" element={<AuthDemo />} />
           <Route path="/middleware-demo" element={<MiddlewareDemo />} />
         </Routes>
+        <Footer/>
       </div>
     </Router>
   );
