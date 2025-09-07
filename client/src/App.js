@@ -6,7 +6,7 @@ import Home from './components/Home';
 import AuthDemo from './components/AuthDemo';
 import MiddlewareDemo from './components/MiddlewareDemo';
 import EventLoopDemo from './components/EventLoopDemo';
-import AuthenticationDemo from './components/AuthenticationDemo'; 
+import AuthForm from './components/AuthForm';
 // Updated import
 import LoadBalancer from './components/LoadBalancer';
 import './styles/LoadBalancer.css';
@@ -21,9 +21,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/eventloop" element={<EventLoopDemo />} />
            <Route path="/loadbalancer" element={<LoadBalancer />} />
-          
-          <Route path="/authentication" element={<AuthenticationDemo />} /> {/* Updated route */}
-          <Route path="/auth-demo" element={<AuthDemo />} />
+           <Route path= "/auth-demo" element= {<AuthForm/>}/>
+          {/* <Route path="/auth-demo" element={<AuthDemo />} /> */}
           <Route path="/middleware-demo" element={<MiddlewareDemo />} />
         </Routes>
         <Footer/>

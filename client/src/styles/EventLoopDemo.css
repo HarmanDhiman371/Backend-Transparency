@@ -1,5 +1,5 @@
 /* EventLoop.css */
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -11,7 +11,7 @@ body {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     color: #e6e6e6;
     padding: 20px;
-}
+} */
 
 .container {
     max-width: 1400px;

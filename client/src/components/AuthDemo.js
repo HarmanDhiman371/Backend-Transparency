@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Signup from './Signup';
+import'../styles/auth.css';
 import ProcessVisualization from './ProcessVisualization';
 
 const AuthDemo = () => {

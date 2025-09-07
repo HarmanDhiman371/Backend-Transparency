@@ -3,7 +3,7 @@
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
   padding: 0;
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   width: 100%;
   z-index: 1000;
@@ -11,7 +11,7 @@
 }
 
 .nav-container {
-  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
