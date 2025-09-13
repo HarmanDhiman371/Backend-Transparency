@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import '../styles/searching.css';
+import styles from '../styles/searching.module.css';
 
 const SEARCH_ALGORITHMS = {
   linearSearch: {
@@ -453,14 +453,14 @@ const SearchingPage = () => {
 
   // Classes for array elements to highlight states
   const getElementClasses = (index) => {
-    let classes = 'array-element';
+    let classes = styles.searchArrayElement;
 
-    if (highlightedElements.current.includes(index)) classes += ' current';
-    if (highlightedElements.left.includes(index)) classes += ' left-pointer';
-    if (highlightedElements.right.includes(index)) classes += ' right-pointer';
-    if (highlightedElements.mid.includes(index)) classes += ' mid-pointer';
-    if (highlightedElements.found.includes(index)) classes += ' found';
-    if (highlightedElements.range.includes(index)) classes += ' in-range';
+    if (highlightedElements.current.includes(index)) classes += ` ${styles.searchCurrent}`;
+    if (highlightedElements.left.includes(index)) classes += ` ${styles.searchLeftPointer}`;
+    if (highlightedElements.right.includes(index)) classes += ` ${styles.searchRightPointer}`;
+    if (highlightedElements.mid.includes(index)) classes += ` ${styles.searchMidPointer}`;
+    if (highlightedElements.found.includes(index)) classes += ` ${styles.searchFound}`;
+    if (highlightedElements.range.includes(index)) classes += ` ${styles.searchInRange}`;
 
     return classes;
   };
@@ -483,31 +483,31 @@ const SearchingPage = () => {
     const midIndex = highlightedElements.mid[0];
 
     return (
-      <div className="pointer-labels">
+      <div className={styles.searchPointerLabels}>
         {leftIndex !== undefined && (
           <div 
-            className="pointer-label left-pointer-label"
+            className={`${styles.searchPointerLabel} ${styles.searchLeftPointerLabel}`}
             style={{ left: `${(leftIndex / array.length) * 100}%` }}
           >
-            <div className="pointer-arrow"></div>
+            <div className={styles.searchPointerArrow}></div>
             <span>Left: {leftIndex}</span>
           </div>
         )}
         {rightIndex !== undefined && (
           <div 
-            className="pointer-label right-pointer-label"
+            className={`${styles.searchPointerLabel} ${styles.searchRightPointerLabel}`}
             style={{ left: `${(rightIndex / array.length) * 100}%` }}
           >
-            <div className="pointer-arrow"></div>
+            <div className={styles.searchPointerArrow}></div>
             <span>Right: {rightIndex}</span>
           </div>
         )}
         {midIndex !== undefined && (
           <div 
-            className="pointer-label mid-pointer-label"
+            className={`${styles.searchPointerLabel} ${styles.searchMidPointerLabel}`}
             style={{ left: `${(midIndex / array.length) * 100}%` }}
           >
-            <div className="pointer-arrow"></div>
+            <div className={styles.searchPointerArrow}></div>
             <span>Mid: {midIndex}</span>
           </div>
         )}
@@ -539,13 +539,13 @@ const SearchingPage = () => {
   }, []);
 
   return (
-    <div className="app-container">
+    <div className={styles.searchAppContainer}>
       {/* Header */}
-      <header className="main-header">
-        <div className="header-content">
-          <div className="logo-section">
-            <i className="fas fa-search logo-icon"></i>
-            <div className="title-group">
+      <header className={styles.searchMainHeader}>
+        <div className={styles.searchHeaderContent}>
+          <div className={styles.searchLogoSection}>
+            <i className={`fas fa-search ${styles.searchLogoIcon}`}></i>
+            <div className={styles.searchTitleGroup}>
               <h1>Searching Algorithm Visualizer</h1>
               <p>Interactive Search Algorithms Learning Platform</p>
             </div>
@@ -554,11 +554,11 @@ const SearchingPage = () => {
       </header>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className={styles.searchMainContent}>
         {/* Control Panel */}
-        <section className="control-panel">
-          <div className="control-section input-section">
-            <div className="input-group">
+        <section className={styles.searchControlPanel}>
+          <div className={styles.searchControlSection}>
+            <div className={styles.searchInputGroup}>
               <label htmlFor="targetValue">Target</label>
               <input
                 type="number"
@@ -568,7 +568,7 @@ const SearchingPage = () => {
                 onChange={(e) => setTargetValue(e.target.value)}
               />
             </div>
-            <div className="input-group">
+            <div className={styles.searchInputGroup}>
               <label htmlFor="valueInput">Value</label>
               <input
                 type="number"
@@ -578,7 +578,7 @@ const SearchingPage = () => {
                 onChange={(e) => setValueInput(e.target.value)}
               />
             </div>
-            <div className="input-group">
+            <div className={styles.searchInputGroup}>
               <label htmlFor="indexInput">Index</label>
               <input
                 type="number"
@@ -588,7 +588,7 @@ const SearchingPage = () => {
                 onChange={(e) => setIndexInput(e.target.value)}
               />
             </div>
-            <div className="input-group">
+            <div className={styles.searchInputGroup}>
               <label htmlFor="arraySizeInput">Array Size</label>
               <input
                 type="number"
@@ -602,25 +602,25 @@ const SearchingPage = () => {
             </div>
           </div>
 
-          <div className="control-section operation-section">
-            <div className="operation-group">
-              <button className="operation-btn" onClick={insertElement} disabled={isPlaying}>
+          <div className={styles.searchControlSection}>
+            <div className={styles.searchOperationGroup}>
+              <button className={styles.searchOperationBtn} onClick={insertElement} disabled={isPlaying}>
                 <i className="fas fa-plus"></i> Insert
               </button>
-              <button className="operation-btn" onClick={deleteElement} disabled={isPlaying}>
+              <button className={styles.searchOperationBtn} onClick={deleteElement} disabled={isPlaying}>
                 <i className="fas fa-minus"></i> Delete
               </button>
 
 
               <button
-                className={`operation-btn search-algo ${selectedAlgorithm === 'linearSearch' ? 'active' : ''}`}
+                className={`${styles.searchOperationBtn} ${styles.searchAlgo} ${selectedAlgorithm === 'linearSearch' ? styles.searchActive : ''}`}
                 onClick={() => !isPlaying && setSelectedAlgorithm('linearSearch')}
                 disabled={isPlaying}
               >
                 <i className="fas fa-arrow-right"></i> Linear Search
               </button>
               <button
-                className={`operation-btn search-algo ${selectedAlgorithm === 'binarySearch' ? 'active' : ''}`}
+                className={`${styles.searchOperationBtn} ${styles.searchAlgo} ${selectedAlgorithm === 'binarySearch' ? styles.searchActive : ''}`}
                 onClick={() => !isPlaying && setSelectedAlgorithm('binarySearch')}
                 disabled={isPlaying}
               >
@@ -629,10 +629,10 @@ const SearchingPage = () => {
             </div>
           </div>
 
-          <div className="control-section settings-section">
-            <div className="setting-group">
+          <div className={styles.searchControlSection}>
+            <div className={styles.searchSettingGroup}>
               <label htmlFor="animationSpeed">Animation Speed</label>
-              <div className="speed-control">
+              <div className={styles.searchSpeedControl}>
                 <input
                   type="range"
                   id="animationSpeed"
@@ -644,16 +644,16 @@ const SearchingPage = () => {
                 <span id="speedValue">{animationSpeed}ms</span>
               </div>
             </div>
-            <div className="utility-buttons">
-              <button className="utility-btn" onClick={selectedAlgorithm === 'binarySearch' ? generateSortedArray : generateRandomArray} disabled={isPlaying}>
+            <div className={styles.searchUtilityButtons}>
+              <button className={styles.searchUtilityBtn} onClick={selectedAlgorithm === 'binarySearch' ? generateSortedArray : generateRandomArray} disabled={isPlaying}>
                 <i className="fas fa-random"></i>
                 Generate {selectedAlgorithm === 'binarySearch' ? 'Sorted' : 'Random'}
               </button>
-              <button className="utility-btn" onClick={clearAll} disabled={isPlaying}>
+              <button className={styles.searchUtilityBtn} onClick={clearAll} disabled={isPlaying}>
                 <i className="fas fa-trash"></i>
                 Clear All
               </button>
-              <button className="utility-btn" onClick={reset} disabled={isPlaying}>
+              <button className={styles.searchUtilityBtn} onClick={reset} disabled={isPlaying}>
                 <i className="fas fa-redo"></i>
                 Reset
               </button>
@@ -662,18 +662,18 @@ const SearchingPage = () => {
         </section>
 
         {/* Visualization Container */}
-        <section className="visualization-container">
-          <div className="viz-header">
-            <div className="viz-title">
+        <section className={styles.searchVisualizationContainer}>
+          <div className={styles.searchVizHeader}>
+            <div className={styles.searchVizTitle}>
               <h2>Search Visualization - {SEARCH_ALGORITHMS[selectedAlgorithm].name}</h2>
-              <div className="complexity-info">
-                <span className="complexity-badge time">Time: {SEARCH_ALGORITHMS[selectedAlgorithm].timeComplexity}</span>
-                <span className="complexity-badge space">Space: {SEARCH_ALGORITHMS[selectedAlgorithm].spaceComplexity}</span>
+              <div className={styles.searchComplexityInfo}>
+                <span className={`${styles.searchComplexityBadge} ${styles.searchTime}`}>Time: {SEARCH_ALGORITHMS[selectedAlgorithm].timeComplexity}</span>
+                <span className={`${styles.searchComplexityBadge} ${styles.searchSpace}`}>Space: {SEARCH_ALGORITHMS[selectedAlgorithm].spaceComplexity}</span>
               </div>
             </div>
-            <div className="viz-controls">
+            <div className={styles.searchVizControls}>
               <button
-                className="control-btn"
+                className={styles.searchControlBtn}
                 onClick={stepForward}
                 disabled={!steps.length || currentStep >= steps.length - 1 || isPlaying}
               >
@@ -681,46 +681,46 @@ const SearchingPage = () => {
                 Step
               </button>
               {!isPlaying ? (
-                <button className="control-btn" onClick={startSearch} disabled={!array.length || !targetValue}>
+                <button className={styles.searchControlBtn} onClick={startSearch} disabled={!array.length || !targetValue}>
                   <i className="fas fa-play"></i>
                   {isPaused ? 'Resume' : 'Start Search'}
                 </button>
               ) : (
-                <button className="control-btn" onClick={pauseSearch}>
+                <button className={styles.searchControlBtn} onClick={pauseSearch}>
                   <i className="fas fa-pause"></i>
                   Pause
                 </button>
               )}
-              <button className="control-btn" onClick={stopSearch}>
+              <button className={styles.searchControlBtn} onClick={stopSearch}>
                 <i className="fas fa-stop"></i>
                 Stop
               </button>
-              <button className="control-btn" onClick={() => setShowCode(!showCode)}>
+              <button className={styles.searchControlBtn} onClick={() => setShowCode(!showCode)}>
                 <i className="fas fa-code"></i>
                 {showCode ? 'Hide' : 'Show'} Code
               </button>
             </div>
           </div>
 
-          <div className="visualization-area">
+          <div className={styles.searchVisualizationArea}>
             {array.length === 0 ? (
-              <div className="empty-state">
+              <div className={styles.searchEmptyState}>
                 <i className="fas fa-search"></i>
                 <h3>Empty Array</h3>
                 <p>Generate an array to start searching</p>
               </div>
             ) : (
-              <div className="array-visualization">
-                <div className="array-container">
+              <div className={styles.searchArrayVisualization}>
+                <div className={styles.searchArrayContainer}>
                   {array.map((value, index) => (
                     <div key={index} className={getElementClasses(index)}>
                       <div
-                        className="array-bar"
+                        className={styles.searchArrayBar}
                         style={{ height: `${getBarHeight(value)}px` }}
                       >
                         {value}
                       </div>
-                      <div className="index">{index}</div>
+                      <div className={styles.searchIndex}>{index}</div>
                     </div>
                   ))}
                 </div>
@@ -729,14 +729,14 @@ const SearchingPage = () => {
             )}
 
             {searchResult.found !== null && (
-              <div className="search-result">
+              <div className={styles.searchSearchResult}>
                 {searchResult.found ? (
-                  <div className="result-found">
+                  <div className={styles.searchResultFound}>
                     <i className="fas fa-check-circle"></i>
                     Target {targetValue} found at index {searchResult.index}!
                   </div>
                 ) : (
-                  <div className="result-not-found">
+                  <div className={styles.searchResultNotFound}>
                     <i className="fas fa-times-circle"></i>
                     Target {targetValue} not found in array
                   </div>
@@ -745,58 +745,58 @@ const SearchingPage = () => {
             )}
           </div>
 
-          <div className="operation-info">
-            <div className="info-header">
+          <div className={styles.searchOperationInfo}>
+            <div className={styles.searchInfoHeader}>
               <i className="fas fa-info-circle"></i>
               <span>Current Operation</span>
             </div>
-            <div className="info-content">{currentOperation}</div>
+            <div className={styles.searchInfoContent}>{currentOperation}</div>
           </div>
         </section>
 
         {/* Statistics and Legend */}
-        <section className="stats-panel">
-          <div className="stats-group">
-            <div className="stat-item">
-              <span className="stat-value">{stats.comparisons}</span>
-              <span className="stat-label">Comparisons</span>
+        <section className={styles.searchStatsPanel}>
+          <div className={styles.searchStatsGroup}>
+            <div className={styles.searchStatItem}>
+              <span className={styles.searchStatValue}>{stats.comparisons}</span>
+              <span className={styles.searchStatLabel}>Comparisons</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-value">{stats.access}</span>
-              <span className="stat-label">Array Access</span>
+            <div className={styles.searchStatItem}>
+              <span className={styles.searchStatValue}>{stats.access}</span>
+              <span className={styles.searchStatLabel}>Array Access</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-value">{stats.iterations}</span>
-              <span className="stat-label">Iterations</span>
+            <div className={styles.searchStatItem}>
+              <span className={styles.searchStatValue}>{stats.iterations}</span>
+              <span className={styles.searchStatLabel}>Iterations</span>
             </div>
           </div>
 
-          <div className="legend">
+          <div className={styles.searchLegend}>
             <h4>Legend</h4>
-            <div className="legend-items">
-              <div className="legend-item">
-                <div className="legend-color" style={{ background: 'var(--viz-current)' }}></div>
-                <span className="legend-label">Current Element</span>
+            <div className={styles.searchLegendItems}>
+              <div className={styles.searchLegendItem}>
+                <div className={styles.searchLegendColor} style={{ background: 'var(--search-viz-current)' }}></div>
+                <span className={styles.searchLegendLabel}>Current Element</span>
               </div>
-              <div className="legend-item">
-                <div className="legend-color" style={{ background: 'var(--viz-left)' }}></div>
-                <span className="legend-label">Left Pointer</span>
+              <div className={styles.searchLegendItem}>
+                <div className={styles.searchLegendColor} style={{ background: 'var(--search-viz-left)' }}></div>
+                <span className={styles.searchLegendLabel}>Left Pointer</span>
               </div>
-              <div className="legend-item">
-                <div className="legend-color" style={{ background: 'var(--viz-right)' }}></div>
-                <span className="legend-label">Right Pointer</span>
+              <div className={styles.searchLegendItem}>
+                <div className={styles.searchLegendColor} style={{ background: 'var(--search-viz-right)' }}></div>
+                <span className={styles.searchLegendLabel}>Right Pointer</span>
               </div>
-              <div className="legend-item">
-                <div className="legend-color" style={{ background: 'var(--viz-mid)' }}></div>
-                <span className="legend-label">Mid Pointer</span>
+              <div className={styles.searchLegendItem}>
+                <div className={styles.searchLegendColor} style={{ background: 'var(--search-viz-mid)' }}></div>
+                <span className={styles.searchLegendLabel}>Mid Pointer</span>
               </div>
-              <div className="legend-item">
-                <div className="legend-color" style={{ background: 'var(--viz-found)' }}></div>
-                <span className="legend-label">Found</span>
+              <div className={styles.searchLegendItem}>
+                <div className={styles.searchLegendColor} style={{ background: 'var(--search-viz-found)' }}></div>
+                <span className={styles.searchLegendLabel}>Found</span>
               </div>
-              <div className="legend-item">
-                <div className="legend-color" style={{ background: 'var(--viz-range)' }}></div>
-                <span className="legend-label">Search Range</span>
+              <div className={styles.searchLegendItem}>
+                <div className={styles.searchLegendColor} style={{ background: 'var(--search-viz-range)' }}></div>
+                <span className={styles.searchLegendLabel}>Search Range</span>
               </div>
             </div>
           </div>
@@ -804,17 +804,17 @@ const SearchingPage = () => {
 
         {/* Code Section */}
         {showCode && (
-          <section className="code-section">
-            <div className="algorithm-info">
+          <section className={styles.searchCodeSection}>
+            <div className={styles.searchAlgorithmInfo}>
               <h2>{SEARCH_ALGORITHMS[selectedAlgorithm].name}</h2>
-              <p className="algorithm-definition">
+              <p className={styles.searchAlgorithmDefinition}>
                 {SEARCH_ALGORITHMS[selectedAlgorithm].definition}
               </p>
-              <div className="complexity-details">
+              <div className={styles.searchComplexityDetails}>
                 <div><strong>Time Complexity:</strong> {SEARCH_ALGORITHMS[selectedAlgorithm].timeComplexity}</div>
                 <div><strong>Space Complexity:</strong> {SEARCH_ALGORITHMS[selectedAlgorithm].spaceComplexity}</div>
               </div>
-              <pre className="code-block">
+              <pre className={styles.searchCodeBlock}>
                 <code>{SEARCH_ALGORITHMS[selectedAlgorithm].code}</code>
               </pre>
             </div>

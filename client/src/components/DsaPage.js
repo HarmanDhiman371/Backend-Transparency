@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/dsa.css";
+import styles from "../styles/dsa.module.css";
 import { useNavigate } from "react-router-dom";
 
 const topics = [
@@ -39,38 +39,37 @@ const DsaPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="homepage">
-      <section className="hero">
-        <div className="hero-content">
+    <div className={styles.dsaPage}>
+      <section className={styles.dsaHero}>
+        <div className={styles.dsaHeroContent}>
           <h1>DSA Visualizations</h1>
           <p>
             Interactive visual exploration of classic Data Structures and Algorithms.
             Master sorting, searching, trees, queues, and linked lists with user-friendly experiences.
           </p>
-          <button className="cta-button" onClick={() => window.scrollTo({ top: 700, left: 0, behavior: "smooth" })}>
+          <button className={styles.dsaCtaButton} onClick={() => window.scrollTo({ top: 700, left: 0, behavior: "smooth" })}>
             Explore Topics
           </button>
         </div>
-        <div className="hero-image">
-          {/* Use illustration or animation as per project requirements */}
+        <div className={styles.dsaHeroImage}>
           <img src="https://assets.codepen.io/7773162/dsa-visual.svg" alt="DSA Visual" style={{width: "100%", maxWidth: "400px"}} />
         </div>
       </section>
 
-      <section className="card-section">
-        <h2 className="section-title">Topics</h2>
-        <div className="topic-cards">
+      <section className={styles.dsaCardSection}>
+        <h2 className={styles.dsaSectionTitle}>Topics</h2>
+        <div className={styles.dsaTopicCards}>
           {topics.map(topic => (
             <div
-              className="topic-card"
+              className={styles.dsaTopicCard}
               key={topic.name}
               tabIndex={0}
               onClick={() => navigate(topic.route)}
               onKeyPress={e => e.key === "Enter" && navigate(topic.route)}
             >
-              <span className="card-icon">{topic.icon}</span>
-              <h3 className="card-title">{topic.name}</h3>
-              <p className="card-desc">{topic.desc}</p>
+              <span className={styles.dsaCardIcon}>{topic.icon}</span>
+              <h3 className={styles.dsaCardTitle}>{topic.name}</h3>
+              <p className={styles.dsaCardDesc}>{topic.desc}</p>
             </div>
           ))}
         </div>
