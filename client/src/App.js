@@ -15,6 +15,7 @@ import Footer from './components/Footer';
 // import ApiFlowVisualization from './components/Api';
 import DsaPage from './components/DsaPage';
 import SortingPage from './components/SortingPage';
+import SearchingPage from './components/SearchingPage';
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
            
             <Route path= "/dsa" element= {<DsaPage/>}/>
             <Route path= "/sorting" element= {<SortingPage/>}/>
+            <Route path= "/searching" element= {<SearchingPage/>}/>
           {/* <Route path="/auth-demo" element={<AuthDemo />} /> */}
           <Route path="/middleware-demo" element={<MiddlewareDemo />} />
         </Routes>
