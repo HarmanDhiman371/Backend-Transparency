@@ -12,6 +12,9 @@ import LoadBalancer from './components/LoadBalancer';
 import './styles/LoadBalancer.css';
 import './styles/App.css';
 import Footer from './components/Footer';
+// import ApiFlowVisualization from './components/Api';
+import DsaPage from './components/DsaPage';
+import SortingPage from './components/SortingPage';
 function App() {
   return (
     <Router>
@@ -22,6 +25,9 @@ function App() {
           <Route path="/eventloop" element={<EventLoopDemo />} />
            <Route path="/loadbalancer" element={<LoadBalancer />} />
            <Route path= "/auth-demo" element= {<AuthForm/>}/>
+           
+            <Route path= "/dsa" element= {<DsaPage/>}/>
+            <Route path= "/sorting" element= {<SortingPage/>}/>
           {/* <Route path="/auth-demo" element={<AuthDemo />} /> */}
           <Route path="/middleware-demo" element={<MiddlewareDemo />} />
         </Routes>

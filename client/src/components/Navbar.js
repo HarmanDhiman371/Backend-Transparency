@@ -24,6 +24,11 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleDSAClick = () => {
+    navigate('/dsa');
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className="navbar">
       <div className="nav-container">
@@ -55,9 +60,9 @@ const Navbar = () => {
           <div className="nav-item">
             <span 
               className="nav-link" 
-              onClick={() => scrollToSection('features-section')}
+              onClick={handleDSAClick}
             >
-              Features
+              DSA
             </span>
           </div>
 
@@ -106,9 +111,9 @@ const Navbar = () => {
           <div className="mobile-nav-item">
             <span 
               className="mobile-nav-link"
-              onClick={() => scrollToSection('features-section')}
+              onClick={handleDSAClick}
             >
-              Features
+              DSA
             </span>
           </div>
 
